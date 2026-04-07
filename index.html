@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/f88f487569.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+    <style>
+        :root {
+            --primary-color: #0170fe;
+            --secondary-color: #11d2d9;
+            --background-color: #fff;
+        }
+
+        body {
+            background-image: url('images/background2.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: Poppins, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .player {
+            width: 100%;
+            max-width: 350px;
+            backdrop-filter: blur(40px);
+            box-shadow: 0 8px 32px 0 rgb(31, 38, 135, 0.37);
+            padding: 60px 40px;
+            border-radius: 10px;
+        }
+
+        img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+        }
+
+        .thumbnail {
+            background-image: linear-gradient(120deg, var(--secondary-color), var(--primary-color));
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+        }
+
+        img.play {
+            animation: rotate 15s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .details {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .details span {
+            font-size: 15px;
+            margin-top: 5px;
+        }
+
+        .time {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            margin: 10px 0 30px 0;
+            width: 100%;
+            appearance: none;
+            height: 6px;
+        }
+
+        .progress-bar::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background-image: linear-gradient(120deg, var(--secondary-color), var(--primary-color));
+            border-radius: 3px;
+            transition: 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .action {
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        .action button {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            cursor: pointer;
+        }
+
+        .action button i {
+            font-size: 20px;
+        }
+
+        .action button.play {
+            background-image: linear-gradient(120deg, var(--secondary-color), var(--primary-color));
+            color: #fff;
+        }
+
+        .action button.prev-play,
+        .action button.next-play {
+            background-image: linear-gradient(120deg, var(--secondary-color), var(--primary-color));
+
+        }
+
+        .action button.prev-play i,
+        .action button.next-play i {
+            color: #fff;
+        }
+
+
+        .hidden{
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="player">
+        <div class="thumbnail">
+            <img src="https://www.dropbox.com/s/xxmwcz14hkn7iwl/happier.png?raw=1" alt="" id="thumb">
+        </div>
+        <div class="details">
+            <h3 id="title">Happier</h3>
+            <span id="artist">Marshmello</span>
+        </div>
+    
+        <audio id="song"  >
+            <source src="" type="audio/mp3" >
+        </audio>
+        <div class="time">
+            <span id="start">00:00</span>
+            <span id="end">00:00</span>
+        </div>
+        <input type="range" class="progress-bar" id="progress" value="0" max="0">
+        <div class="action">
+            <button class="prev-play">
+                <i class="fa-solid fa-backward"></i>
+            </button>
+            <button class="play">
+                <i class="fa-solid fa-play icon-play" ></i>
+                <i class="fa-solid fa-pause icon-pause hidden"  ></i>
+            </button>
+            <button class="next-play">
+                <i class="fa-solid fa-forward"></i>
+            </button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

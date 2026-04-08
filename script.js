@@ -1,122 +1,111 @@
-async function songs(){
-    try{
-        const response = await fetch("songs.json");
-        const data = await response.json();
-        console.log(data[0].link);
-        return data;
-    } catch (error) {
-        console.error("Erreur:", error);
-    }
-} 
-songs();
-
-
-
-
-const playBtn = document.querySelector(".icon-play");
-console.log(playBtn);
-const pauseBtn = document.querySelector(".icon-pause");
 const song = document.querySelector("#song");
-console.log(song);
-const title =  document.querySelector("#title");
-console.log(title);
+const title = document.querySelector("#title");
+const tit = document.querySelector("title");
+
 const artist = document.querySelector("#artist");
 const thumb = document.querySelector("#thumb");
+
+const playBtn = document.querySelector(".playBtn");
+const pauseBtn = document.querySelector(".pauseBtn");
+
+const prevBtn = document.querySelector(".prev");
+const nextBtn = document.querySelector(".next");
+
 const progress = document.querySelector("#progress");
 const start = document.querySelector("#start");
 const end = document.querySelector("#end");
 
-const playButton = document.querySelector(".play");
-const prevPlayButton = document.querySelector(".prev-play");
-const nextPlayButton = document.querySelector(".next-play");
-
-
-playButton.addEventListener("click", playPause);
-prevPlayButton.addEventListener("click", ()=> changeSong(-1));
-nextPlayButton.addEventListener("click", ()=> changeSong(1));
-progress.addEventListener("change", updateSongProgress);
-
+let songs = [];
 let index = 0;
-let interval;
+let interval;// valeur par defaut d'interval
 
-setSongDetails(index);
-
-function setSongDetails(songIndex){
-    song.src = songs[songIndex].link;
-    title.innerHTML = songs[songIndex].name;
-    artist.innerHTML = songs[songIndex].artists;
-    thumb.src = songs[songIndex].image;
-    start.innerHTML = "00:00";
-    end.innerHTML = "00:00";
-    clearInterval(interval);
-    song.onloadedmetadata = loadMetadata;
+// 🎧 Charger les chansons
+async function loadSongs() {
+  const res = await fetch("songs.json");
+  songs = await res.json();
+  //console.log(songs)
+  setSong(index);
 }
 
-function loadMetadata() {
+loadSongs();
+
+
+// 🎵 Mettre une musique
+function setSong(i) {
+  song.src = songs[i].link;
+  title.innerText = songs[i].name;
+  tit.innerText = songs[i].artists;
+
+  artist.innerText = songs[i].artists;
+  thumb.src = songs[i].image;
+
+  clearInterval(interval);
+
+  song.onloadedmetadata = () => {
     progress.max = song.duration;
-    progress.value = song.currentTime;
-    updateSongTimeDisplay();
-    interval = setInterval(updateSongTimeDisplay, 1000);
+    end.innerText = formatTime(song.duration);
+    start.innerText = "00:00";
+
+    startProgress();
+  };
 }
 
-function updateSongTimeDisplay() {
-    let min = Math.floor(song.duration / 60); //secondes →  min
-    let sec = Math.floor(song.duration % 60); //donne les secondes restantes
+// ▶️ Play / Pause
+playBtn.addEventListener("click", () => {
+  song.play();
 
-    let curMin = Math.floor(song.currentTime / 60);
-    let curSec = Math.floor(song.currentTime % 60);
-
-    if(sec < 10) {
-        sec = "0" + sec //sec => chaine de caractère('05')
-    }
-    if(curSec < 10){
-        curSec  = "0" + curSec;
-    }
-    if(min < 10){
-        min = "0" + min;
-    }
-    if(curMin < 10){
-        curMin = "0" + curMin;
-    }
-    end.innerHTML = min + ":" + sec;
-    start.innerHTML = curMin + ":" + curSec;
-}
-
-///------------------------------------------------------
-
-function changeSong(increment){
-    index  = (index + increment + songs.length) % songs.length;
-    setSongDetails(index);
-    song.play();
-}
-
-function playPause(){
-    if(!pauseBtn.classList.contains("hidden")){ //lorsque il ya pas de classe hidden, "Il est présent, visible"
-        song.pause(); //on met pause sur la musik
-        // a ne pa s comfondre ce qu'on fait sur la "musique" et ce qu'on fait sur les 'bouttonss')
-        pauseBtn.classList.add("hidden"); //on cache le button pause
-        playBtn.classList.remove("hidden");
-        thumb.classList.remove("play");
-        return
-    }
-    song.play();
-  startSongProgressTracker();
   playBtn.classList.add("hidden");
   pauseBtn.classList.remove("hidden");
+
   thumb.classList.add("play");
+});
+
+pauseBtn.addEventListener("click", () => {
+  song.pause();
+
+  pauseBtn.classList.add("hidden");
+  playBtn.classList.remove("hidden");
+
+  thumb.classList.remove("play");
+});
+
+// ⏭ next / ⏮ prev
+nextBtn.addEventListener("click", () => changeSong(1));
+prevBtn.addEventListener("click", () => changeSong(-1));
+
+function changeSong(step) {
+  index = (index + step + songs.length) % songs.length;
+  setSong(index);
+  song.play();
+
+  playBtn.classList.add("hidden");
+  pauseBtn.classList.remove("hidden");
 }
 
-function updateSongProgress() {
-  clearInterval(songProgressTrackerInterval);
-  song.currentTime = progress.value;
-  startSongProgressTracker();
-};
-function startSongProgressTracker() {
-  clearInterval(songProgressTrackerInterval);
-  songProgressTrackerInterval = setInterval(() => {
+// ⏱️ progression automatique
+function startProgress() {
+  interval = setInterval(() => {
     progress.value = song.currentTime;
-    if (song.currentTime == song.duration) {
+    start.innerText = formatTime(song.currentTime);
+
+    if (song.currentTime >= song.duration) {
       changeSong(1);
     }
   }, 1000);
+}
+
+// 🎚️ changer position musique
+progress.addEventListener("input", () => {
+  song.currentTime = progress.value;
+});
+
+// ⏱️ format temps
+function formatTime(time) {
+  let min = Math.floor(time / 60);
+  let sec = Math.floor(time % 60);
+
+  if (sec < 10) sec = "0" + sec;
+  if (min < 10) min = "0" + min;
+
+  return `${min}:${sec}`;
 }
